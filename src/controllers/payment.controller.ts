@@ -10,7 +10,7 @@ export class PaymentController {
     this.paymentService = new PaymentService();
   }
 
-  public processPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public processPayment = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { orderId, paymentMethod } = req.body;
       
@@ -29,7 +29,7 @@ export class PaymentController {
     }
   };
 
-  public getPaymentStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getPaymentStatus = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { orderId } = req.params;
       const paymentStatus = await this.paymentService.getPaymentStatus(orderId);
@@ -45,7 +45,7 @@ export class PaymentController {
     }
   };
 
-  public refundPayment = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public refundPayment = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { orderId } = req.params;
       const result = await this.paymentService.refundPayment(orderId);

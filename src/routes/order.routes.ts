@@ -15,6 +15,13 @@ router.post(
   orderController.createOrder
 );
 
+router.put(
+  '/:id/schedule',
+  authenticate,
+  authorize(UserRole.CUSTOMER),
+  orderController.updateScheduledOrder
+);
+
 // Protected routes - All authenticated users
 router.get(
   '/',

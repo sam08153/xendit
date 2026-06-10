@@ -1,6 +1,6 @@
 // src/models/restaurant.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
-import { IRestaurant, ILocation, IOperatingHours } from '../types/restaurant.types';
+import { IRestaurant } from '../types/restaurant.types';
 
 const locationSchema: Schema = new Schema({
   type: {
@@ -73,6 +73,14 @@ const restaurantSchema: Schema = new Schema(
       default: 0,
       min: 0,
       max: 5,
+    },
+    averageDeliveryTime: {
+      type: Number,
+      min: 0,
+    },
+    minimumOrderValue: {
+      type: Number,
+      min: 0,
     },
     isActive: {
       type: Boolean,

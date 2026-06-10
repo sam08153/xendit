@@ -4,16 +4,7 @@ import { verifyToken, TokenPayload } from '../utils/jwt';
 import { UnauthorizedError, ForbiddenError } from '../utils/errors';
 import { UserRole } from '../types/user.types';
 
-// Extend Express Request interface to include user property
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
-  }
-}
-
-export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+export const authenticate = (req: any, res: Response, next: NextFunction): void => {
   try {
     const authHeader = req.headers.authorization;
     
@@ -32,7 +23,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 };
 
 export const authorize = (...roles: UserRole[]) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
+  return (req: any, res: Response, next: NextFunction): void => {
     if (!req.user) {
       return next(new UnauthorizedError());
     }

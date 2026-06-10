@@ -10,7 +10,7 @@ export class RestaurantController {
     this.restaurantService = new RestaurantService();
   }
 
-  public getAllRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAllRestaurants = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const restaurants = await this.restaurantService.getAllRestaurants(req.query);
       
@@ -26,7 +26,7 @@ export class RestaurantController {
     }
   };
 
-  public getRestaurantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getRestaurantById = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const restaurant = await this.restaurantService.getRestaurantById(id);
@@ -42,7 +42,7 @@ export class RestaurantController {
     }
   };
 
-  public createRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createRestaurant = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -61,7 +61,7 @@ export class RestaurantController {
     }
   };
 
-  public updateRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateRestaurant = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -81,7 +81,7 @@ export class RestaurantController {
     }
   };
 
-  public deleteRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public deleteRestaurant = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -99,7 +99,7 @@ export class RestaurantController {
     }
   };
 
-  public getNearbyRestaurants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getNearbyRestaurants = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { lat, lng, distance } = req.query;
       

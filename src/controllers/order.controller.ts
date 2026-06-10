@@ -11,13 +11,20 @@ export class OrderController {
     this.orderService = new OrderService();
   }
 
-  public getAllOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAllOrders = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId || !req.user.role) {
         throw new BadRequestError('User ID and role are required');
       }
       
-      const orders = await this.orderService.getAllOrders(req.user.userId, req.user.role);
+      const { isScheduled } = req.query;
+      const filters: any = {};
+      
+      if (isScheduled !== undefined) {
+        filters.isScheduled = isScheduled === 'true';
+      }
+      
+      const orders = await this.orderService.getAllOrders(req.user.userId, req.user.role, filters);
       
       res.status(200).json({
         status: 'success',
@@ -31,7 +38,7 @@ export class OrderController {
     }
   };
 
-  public getOrderById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getOrderById = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId || !req.user.role) {
         throw new BadRequestError('User ID and role are required');
@@ -51,7 +58,7 @@ export class OrderController {
     }
   };
 
-  public createOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createOrder = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -70,7 +77,7 @@ export class OrderController {
     }
   };
 
-  public updateOrderStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateOrderStatus = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId || !req.user.role) {
         throw new BadRequestError('User ID and role are required');
@@ -101,7 +108,7 @@ export class OrderController {
     }
   };
 
-  public assignDeliveryPerson = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public assignDeliveryPerson = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const { deliveryPersonId } = req.body;
@@ -123,7 +130,7 @@ export class OrderController {
     }
   };
 
-  public cancelOrder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public cancelOrder = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId || !req.user.role) {
         throw new BadRequestError('User ID and role are required');
@@ -135,6 +142,31 @@ export class OrderController {
       res.status(204).json({
         status: 'success',
         data: null
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updateScheduledOrder = async (req: any, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.user || !req.user.userId || !req.user.role) {
+        throw new BadRequestError('User ID and role are required');
+      }
+      
+      const { id } = req.params;
+      const order = await this.orderService.updateScheduledOrder(
+        id,
+        req.body,
+        req.user.userId,
+        req.user.role
+      );
+      
+      res.status(200).json({
+        status: 'success',
+        data: {
+          order
+        }
       });
     } catch (error) {
       next(error);

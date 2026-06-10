@@ -1,0 +1,1134 @@
+{
+  "info": {
+    "_postman_id": "food-delivery-app-test-collection",
+    "name": "Food Delivery App",
+    "description": "Comprehensive API collection for Food Delivery App covering all features: search/filter, order scheduling, loyalty program, real-time notifications, analytics, and i18n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"John Doe\",\n  \"phone\": \"+1234567890\",\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10001\",\n    \"country\": \"USA\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.token) {",
+                  "  pm.environment.set('token', jsonData.data.token);",
+                  "}",
+                  "if (jsonData.data.user && jsonData.data.user._id) {",
+                  "  pm.environment.set('userId', jsonData.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Restaurant Owner)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.token) {",
+                  "  pm.environment.set('token', jsonData.data.token);",
+                  "}",
+                  "if (jsonData.data.user && jsonData.data.user._id) {",
+                  "  pm.environment.set('userId', jsonData.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"restaurant@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.token) {",
+                  "  pm.environment.set('token', jsonData.data.token);",
+                  "}",
+                  "if (jsonData.data.user && jsonData.data.user._id) {",
+                  "  pm.environment.set('userId', jsonData.data.user._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Restaurants",
+      "item": [
+        {
+          "name": "Get All Restaurants (with filters)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.restaurants && jsonData.data.restaurants.length > 0) {",
+                  "  pm.environment.set('restaurantId', jsonData.data.restaurants[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants?lat=40.7128&lng=-74.0060&maxDistance=1000000&isOpenNow=true&sortBy=rating",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants"],
+              "query": [
+                { "key": "lat", "value": "40.7128", "description": "Latitude for geospatial search" },
+                { "key": "lng", "value": "-74.0060", "description": "Longitude for geospatial search" },
+                { "key": "maxDistance", "value": "1000000", "description": "Max distance in meters" },
+                { "key": "isOpenNow", "value": "true", "description": "Filter by currently open restaurants" },
+                { "key": "sortBy", "value": "rating", "description": "Sort by rating, deliveryTime, minOrder, or name" },
+                { "key": "cuisine", "value": "", "disabled": true, "description": "Filter by cuisine type" },
+                { "key": "rating", "value": "", "disabled": true, "description": "Minimum rating filter" },
+                { "key": "search", "value": "", "disabled": true, "description": "Search by name or description" },
+                { "key": "maxDeliveryTime", "value": "", "disabled": true, "description": "Max delivery time in minutes" },
+                { "key": "minOrderValue", "value": "", "disabled": true, "description": "Minimum order value" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Nearby Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/nearby?lat=40.7128&lng=-74.0060&maxDistance=5000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "nearby"],
+              "query": [
+                { "key": "lat", "value": "40.7128" },
+                { "key": "lng", "value": "-74.0060" },
+                { "key": "maxDistance", "value": "5000" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Restaurant by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Restaurant",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Delicious Eats\",\n  \"description\": \"Best food in town\",\n  \"logo\": \"https://example.com/logo.jpg\",\n  \"address\": {\n    \"street\": \"456 Food St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10002\",\n    \"country\": \"USA\"\n  },\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [-74.0060, 40.7128]\n  },\n  \"cuisine\": [\"Italian\", \"Pizza\"],\n  \"operatingHours\": {\n    \"monday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n    \"tuesday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n    \"wednesday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n    \"thursday\": {\"open\": \"09:00\", \"close\": \"22:00\"},\n    \"friday\": {\"open\": \"09:00\", \"close\": \"23:00\"},\n    \"saturday\": {\"open\": \"10:00\", \"close\": \"23:00\"},\n    \"sunday\": {\"open\": \"10:00\", \"close\": \"22:00\"}\n  },\n  \"contactPhone\": \"+1987654321\",\n  \"rating\": 4.5,\n  \"averageDeliveryTime\": 30,\n  \"minimumOrderValue\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Restaurant",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Delicious Eats Updated\",\n  \"rating\": 4.7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Restaurant",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants/{{restaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Menu",
+      "item": [
+        {
+          "name": "Get Menu Items by Restaurant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.menuItems && jsonData.data.menuItems.length > 0) {",
+                  "  pm.environment.set('menuItemId', jsonData.data.menuItems[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/restaurant/{{restaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "restaurant", "{{restaurantId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Menu Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/search?q=pizza&dietaryRestrictions[]=vegetarian&sortBy=popularity",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "search"],
+              "query": [
+                { "key": "q", "value": "pizza", "description": "Search query" },
+                { "key": "dietaryRestrictions[]", "value": "vegetarian", "description": "Dietary restrictions filter" },
+                { "key": "sortBy", "value": "popularity", "description": "Sort by popularity, price, or name" },
+                { "key": "category", "value": "", "disabled": true, "description": "Filter by category" },
+                { "key": "maxPrice", "value": "", "disabled": true, "description": "Maximum price filter" },
+                { "key": "minPrice", "value": "", "disabled": true, "description": "Minimum price filter" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Menu Item by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/{{menuItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "{{menuItemId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Menu Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"name\": \"Margherita Pizza\",\n  \"description\": \"Classic pizza with fresh mozzarella and basil\",\n  \"price\": 14.99,\n  \"image\": \"https://example.com/pizza.jpg\",\n  \"category\": \"Pizza\",\n  \"tags\": [\"vegetarian\", \"classic\"],\n  \"dietaryRestrictions\": [\"vegetarian\"],\n  \"allergens\": [\"dairy\", \"gluten\"],\n  \"spiceLevel\": 1,\n  \"isAvailable\": true,\n  \"customizationOptions\": [\n    {\n      \"name\": \"Extra Cheese\",\n      \"options\": [\n        { \"name\": \"No\", \"price\": 0 },\n        { \"name\": \"Yes\", \"price\": 2.00 }\n      ],\n      \"required\": false,\n      \"multiSelect\": false\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/menu",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Menu Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 15.99,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/{{menuItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "{{menuItemId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Menu Item",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/menu/{{menuItemId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "menu", "{{menuItemId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order (Immediate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.order && jsonData.data.order._id) {",
+                  "  pm.environment.set('orderId', jsonData.data.order._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"items\": [\n    {\n      \"menuItemId\": \"{{menuItemId}}\",\n      \"quantity\": 2,\n      \"customizations\": [{\"name\": \"Extra Cheese\", \"value\": \"Yes\"}]\n    }\n  ],\n  \"deliveryAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"specialInstructions\": \"Please leave at front desk\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order (Scheduled)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data.order && jsonData.data.order._id) {",
+                  "  pm.environment.set('orderId', jsonData.data.order._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"items\": [\n    {\n      \"menuItemId\": \"{{menuItemId}}\",\n      \"quantity\": 1,\n      \"customizations\": []\n    }\n  ],\n  \"deliveryAddress\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zipCode\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"specialInstructions\": \"Please ring doorbell\",\n  \"scheduledDeliveryTime\": \"2026-06-12T19:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?isScheduled=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [
+                { "key": "isScheduled", "value": "true", "description": "Filter scheduled orders" },
+                { "key": "status", "value": "", "disabled": true, "description": "Filter by order status" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Scheduled Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scheduledDeliveryTime\": \"2026-06-12T20:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}/schedule",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "schedule"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"preparing\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "DELETE",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Delivery Person",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryPersonId\": \"{{userId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/{{orderId}}/assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "{{orderId}}", "assign"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Loyalty Program",
+      "item": [
+        {
+          "name": "Get Loyalty Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loyalty", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Point History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loyalty", "history"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Rewards",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty/rewards",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loyalty", "rewards"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Redeem Reward",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rewardId\": \"{{rewardId}}\",\n  \"orderId\": \"{{orderId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/loyalty/redeem",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "loyalty", "redeem"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Sales Data",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/restaurants/{{restaurantId}}/sales?period=month",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "restaurants", "{{restaurantId}}", "sales"],
+              "query": [
+                { "key": "period", "value": "month", "description": "Period: day, week, month, year" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Key Metrics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/restaurants/{{restaurantId}}/metrics",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "restaurants", "{{restaurantId}}", "metrics"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Popular Items",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/restaurants/{{restaurantId}}/popular-items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "restaurants", "{{restaurantId}}", "popular-items"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Peak Times",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/analytics/restaurants/{{restaurantId}}/peak-times",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analytics", "restaurants", "{{restaurantId}}", "peak-times"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delivery",
+      "item": [
+        {
+          "name": "Get Available Delivery Personnel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/personnel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "personnel"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Orders for Delivery",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Delivery Location",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [-74.0060, 40.7128]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/location",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "location"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Track Delivery Location",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/orders/{{orderId}}/track",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "orders", "{{orderId}}", "track"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Estimate Delivery Time",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/orders/{{orderId}}/eta",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "orders", "{{orderId}}", "eta"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Process Payment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"credit_card\",\n  \"paymentDetails\": {\n    \"cardNumber\": \"4111111111111111\",\n    \"expiry\": \"12/28\",\n    \"cvv\": \"123\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/process",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "process"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/{{orderId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "{{orderId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refund Payment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{"key": "token", "value": "{{token}}"}]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept-Language", "value": "en", "description": "Language for i18n (en, es, fr)" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Customer requested refund\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/{{orderId}}/refund",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "{{orderId}}", "refund"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "i18n (Internationalization)",
+      "item": [
+        {
+          "name": "Get Restaurants in English",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "en", "description": "English language" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants?lat=40.7128&lng=-74.0060&maxDistance=1000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants"],
+              "query": [
+                { "key": "lat", "value": "40.7128" },
+                { "key": "lng", "value": "-74.0060" },
+                { "key": "maxDistance", "value": "1000000" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Restaurants in Spanish",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "es", "description": "Spanish language" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants?lat=40.7128&lng=-74.0060&maxDistance=1000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants"],
+              "query": [
+                { "key": "lat", "value": "40.7128" },
+                { "key": "lng", "value": "-74.0060" },
+                { "key": "maxDistance", "value": "1000000" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Restaurants in French",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Accept-Language", "value": "fr", "description": "French language" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/restaurants?lat=40.7128&lng=-74.0060&maxDistance=1000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "restaurants"],
+              "query": [
+                { "key": "lat", "value": "40.7128" },
+                { "key": "lng", "value": "-74.0060" },
+                { "key": "maxDistance", "value": "1000000" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "WebSocket (Real-time Notifications)",
+      "item": [
+        {
+          "name": "WebSocket Connection Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "This is documentation for WebSocket connection. Use Postman's WebSocket feature to connect.",
+              "host": ["This"],
+              "path": ["is", "documentation", "for", "WebSocket", "connection.", "Use", "Postman's", "WebSocket", "feature", "to", "connect."]
+            },
+            "description": "### WebSocket Connection:\n\n**URL:** `ws://localhost:5000`\n\n**Authentication:** Send JWT token as query parameter:\n`ws://localhost:5000?token={{token}}`\n\n**Events to listen for:**\n- `orderStatusUpdate` - Order status changed\n- `deliveryLocationUpdate` - Delivery person location updated\n- `orderAssigned` - Delivery person assigned to order\n- `loyaltyPointsEarned` - Loyalty points earned\n- `rewardRedeemed` - Reward redeemed successfully\n\n**Example usage in Postman:**\n1. Create a new WebSocket request\n2. Connect to `ws://localhost:5000?token={{token}}`\n3. Listen for events\n4. When you update an order status, you'll receive real-time notifications"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurantId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "menuItemId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "rewardId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

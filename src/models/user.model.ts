@@ -1,7 +1,7 @@
 // src/models/user.model.ts
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser, UserRole, IUserDocument } from '../types/user.types';
+import { UserRole, IUserDocument } from '../types/user.types';
 
 const userSchema: Schema = new Schema(
   {

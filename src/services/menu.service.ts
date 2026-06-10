@@ -114,6 +114,55 @@ export class MenuService {
       }
     }
     
-    return MenuItem.find(searchQuery).sort({ price: 1 });
+    if (filters.dietaryRestrictions) {
+      const restrictions = Array.isArray(filters.dietaryRestrictions) 
+        ? filters.dietaryRestrictions 
+        : [filters.dietaryRestrictions];
+      searchQuery.dietaryRestrictions = { $all: restrictions };
+    }
+    
+    if (filters.allergens) {
+      const allergenList = Array.isArray(filters.allergens) 
+        ? filters.allergens 
+        : [filters.allergens];
+      searchQuery.allergens = { $nin: allergenList };
+    }
+    
+    if (filters.spiceLevelMin || filters.spiceLevelMax) {
+      searchQuery.spiceLevel = {};
+      if (filters.spiceLevelMin) {
+        searchQuery.spiceLevel.$gte = Number(filters.spiceLevelMin);
+      }
+      if (filters.spiceLevelMax) {
+        searchQuery.spiceLevel.$lte = Number(filters.spiceLevelMax);
+      }
+    }
+    
+    if (filters.restaurantId) {
+      searchQuery.restaurantId = filters.restaurantId;
+    }
+
+    let sortOption: any = { price: 1 };
+    
+    if (filters.sortBy) {
+      switch (filters.sortBy) {
+        case 'price':
+          sortOption = { price: 1 };
+          break;
+        case 'priceDesc':
+          sortOption = { price: -1 };
+          break;
+        case 'popularity':
+          sortOption = { orderCount: -1 };
+          break;
+        case 'name':
+          sortOption = { name: 1 };
+          break;
+        default:
+          sortOption = { price: 1 };
+      }
+    }
+    
+    return MenuItem.find(searchQuery).sort(sortOption);
   }
 }

@@ -51,6 +51,8 @@ export interface IOrder {
   specialInstructions?: string;
   estimatedDeliveryTime?: Date;
   actualDeliveryTime?: Date;
+  scheduledDeliveryTime?: Date;
+  isScheduled?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

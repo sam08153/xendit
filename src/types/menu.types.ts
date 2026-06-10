@@ -19,6 +19,10 @@ export interface IMenuItem {
   image: string;
   category: string;
   tags: string[];
+  dietaryRestrictions?: string[];
+  allergens?: string[];
+  spiceLevel?: number;
+  orderCount?: number;
   isAvailable: boolean;
   customizationOptions: ICustomizationOption[];
   createdAt?: Date;

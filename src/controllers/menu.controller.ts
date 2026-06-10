@@ -10,7 +10,7 @@ export class MenuController {
     this.menuService = new MenuService();
   }
 
-  public getMenuItemsByRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getMenuItemsByRestaurant = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { restaurantId } = req.params;
       const menuItems = await this.menuService.getMenuItemsByRestaurant(restaurantId);
@@ -27,7 +27,7 @@ export class MenuController {
     }
   };
 
-  public getMenuItemById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getMenuItemById = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
       const menuItem = await this.menuService.getMenuItemById(id);
@@ -43,7 +43,7 @@ export class MenuController {
     }
   };
 
-  public createMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public createMenuItem = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -62,7 +62,7 @@ export class MenuController {
     }
   };
 
-  public updateMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateMenuItem = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -82,7 +82,7 @@ export class MenuController {
     }
   };
 
-  public deleteMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public deleteMenuItem = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -100,7 +100,7 @@ export class MenuController {
     }
   };
 
-  public searchMenuItems = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public searchMenuItems = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { query, ...filters } = req.query;
       const menuItems = await this.menuService.searchMenuItems(query as string, filters);

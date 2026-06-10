@@ -10,7 +10,7 @@ export class AuthController {
     this.authService = new AuthService();
   }
 
-  public register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public register = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userData: RegisterUserInput = req.body;
       
@@ -30,7 +30,7 @@ export class AuthController {
     }
   };
 
-  public login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public login = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const loginData: LoginUserInput = req.body;
       
@@ -50,7 +50,7 @@ export class AuthController {
     }
   };
 
-  public getProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getProfile = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');

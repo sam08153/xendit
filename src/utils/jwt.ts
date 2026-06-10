@@ -14,11 +14,11 @@ export const generateToken = (payload: TokenPayload): string => {
   }
 
   const expiresIn = typeof environment.jwtExpiresIn === 'number'
-    ? `${environment.jwtExpiresIn}s`
-    : environment.jwtExpiresIn;
+    ? environment.jwtExpiresIn
+    : (environment.jwtExpiresIn as string) || '1h';
 
-  const options: jwt.SignOptions = {
-    expiresIn: '1h',
+  const options = {
+    expiresIn: expiresIn as any,
   };
 
   return jwt.sign(payload as object, environment.jwtSecret, options);

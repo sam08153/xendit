@@ -117,6 +117,13 @@ const orderSchema: Schema = new Schema(
     actualDeliveryTime: {
       type: Date,
     },
+    scheduledDeliveryTime: {
+      type: Date,
+    },
+    isScheduled: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

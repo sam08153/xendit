@@ -1,12 +1,12 @@
 // src/middlewares/error.middleware.ts
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 
 export const errorHandler = (
   err: Error,
-  req: Request,
+  req: any,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   if (err instanceof AppError) {
     res.status(err.statusCode).json({

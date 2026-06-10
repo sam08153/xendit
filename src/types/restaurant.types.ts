@@ -34,6 +34,8 @@ export interface IRestaurant {
   contactPhone: string;
   rating: number;
   isActive: boolean;
+  averageDeliveryTime?: number;
+  minimumOrderValue?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

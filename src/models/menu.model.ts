@@ -1,6 +1,6 @@
 // src/models/menu.model.ts
 import mongoose, { Schema, Document } from 'mongoose';
-import { IMenuItem, ICustomizationOption } from '../types/menu.types';
+import { IMenuItem } from '../types/menu.types';
 
 const customizationOptionSchema: Schema = new Schema({
   name: {
@@ -63,6 +63,24 @@ const menuItemSchema: Schema = new Schema(
     tags: {
       type: [String],
       default: [],
+    },
+    dietaryRestrictions: {
+      type: [String],
+      default: [],
+    },
+    allergens: {
+      type: [String],
+      default: [],
+    },
+    spiceLevel: {
+      type: Number,
+      min: 0,
+      max: 5,
+    },
+    orderCount: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
     isAvailable: {
       type: Boolean,

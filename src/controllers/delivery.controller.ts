@@ -10,7 +10,7 @@ export class DeliveryController {
     this.deliveryService = new DeliveryService();
   }
 
-  public getAvailableDeliveryPersonnel = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAvailableDeliveryPersonnel = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const deliveryPersonnel = await this.deliveryService.getAvailableDeliveryPersonnel();
       
@@ -26,7 +26,7 @@ export class DeliveryController {
     }
   };
 
-  public getOrdersForDelivery = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getOrdersForDelivery = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -46,7 +46,7 @@ export class DeliveryController {
     }
   };
 
-  public updateDeliveryLocation = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateDeliveryLocation = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId) {
         throw new BadRequestError('User ID is required');
@@ -80,7 +80,7 @@ export class DeliveryController {
     }
   };
 
-  public getDeliveryLocationUpdates = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getDeliveryLocationUpdates = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.user || !req.user.userId || !req.user.role) {
         throw new BadRequestError('User ID and role are required');
@@ -105,7 +105,7 @@ export class DeliveryController {
     }
   };
 
-  public estimateDeliveryTime = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public estimateDeliveryTime = async (req: any, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { orderId } = req.params;
       const estimatedTime = await this.deliveryService.estimateDeliveryTime(orderId);
