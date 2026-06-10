@@ -1,31 +1,20 @@
 // src/services/restaurant.service.ts
 import Restaurant from '../models/restaurant.model';
 import { IRestaurant } from '../types/restaurant.types';
+import { RestaurantQueryParams } from '../types/express';
 import { NotFoundError, BadRequestError, ForbiddenError } from '../utils/errors';
+import { isTimeWithinRange, getCurrentDayAndTime } from '../utils/datetime';
 
-function isTimeWithinRange(currentTime: string, openTime: string, closeTime: string): boolean {
-  const parseTime = (timeStr: string): number => {
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    return hours * 60 + minutes;
-  };
-  const current = parseTime(currentTime);
-  const open = parseTime(openTime);
-  const close = parseTime(closeTime);
-  return current >= open && current <= close;
-}
-
-function getCurrentDayAndTime(): { day: string; time: string } {
-  const now = new Date();
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const day = days[now.getDay()];
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const time = `${hours}:${minutes}`;
-  return { day, time };
-}
+// Sort option configuration
+const SORT_OPTIONS: Record<string, Record<string, 1 | -1>> = {
+  rating: { rating: -1 },
+  deliveryTime: { averageDeliveryTime: 1 },
+  minOrder: { minimumOrderValue: 1 },
+  name: { name: 1 }
+};
 
 export class RestaurantService {
-  public async getAllRestaurants(query: any = {}): Promise<IRestaurant[]> {
+  public async getAllRestaurants(query: RestaurantQueryParams = {}): Promise<IRestaurant[]> {
     const { 
       cuisine, 
       rating, 
@@ -38,74 +27,102 @@ export class RestaurantService {
       minOrderValue,
       sortBy
     } = query;
-    
+
+    // Build filter object
+    const filter = this.buildFilter({
+      cuisine,
+      rating,
+      search,
+      lat,
+      lng,
+      maxDistance,
+      maxDeliveryTime,
+      minOrderValue
+    });
+
+    // Get sort option
+    const sortOption = this.getSortOption(sortBy);
+
+    // Fetch restaurants
+    let restaurants = await Restaurant.find(filter).sort(sortOption);
+
+    // Apply isOpenNow filter
+    if (isOpenNow === 'true') {
+      restaurants = this.filterOpenRestaurants(restaurants);
+    }
+
+    return restaurants;
+  }
+
+  /**
+   * Build MongoDB filter from query parameters
+   */
+  private buildFilter(params: {
+    cuisine?: string | string[];
+    rating?: string;
+    search?: string;
+    lat?: string;
+    lng?: string;
+    maxDistance?: string;
+    maxDeliveryTime?: string;
+    minOrderValue?: string;
+  }): any {
     const filter: any = { isActive: true };
-    
-    if (cuisine) {
-      filter.cuisine = { $in: Array.isArray(cuisine) ? cuisine : [cuisine] };
+
+    if (params.cuisine) {
+      filter.cuisine = { 
+        $in: Array.isArray(params.cuisine) ? params.cuisine : [params.cuisine] 
+      };
     }
-    
-    if (rating) {
-      filter.rating = { $gte: Number(rating) };
+
+    if (params.rating) {
+      filter.rating = { $gte: Number(params.rating) };
     }
-    
-    if (search) {
-      filter.$text = { $search: search };
+
+    if (params.search) {
+      filter.$text = { $search: params.search };
     }
-    
-    if (maxDeliveryTime) {
-      filter.averageDeliveryTime = { $lte: Number(maxDeliveryTime) };
+
+    if (params.maxDeliveryTime) {
+      filter.averageDeliveryTime = { $lte: Number(params.maxDeliveryTime) };
     }
-    
-    if (minOrderValue) {
-      filter.minimumOrderValue = { $gte: Number(minOrderValue) };
+
+    if (params.minOrderValue) {
+      filter.minimumOrderValue = { $gte: Number(params.minOrderValue) };
     }
-    
-    if (lat && lng) {
-      const distance = maxDistance ? Number(maxDistance) : 5000;
+
+    if (params.lat && params.lng) {
+      const distance = params.maxDistance ? Number(params.maxDistance) : 5000;
       filter.location = {
         $near: {
           $geometry: {
             type: 'Point',
-            coordinates: [Number(lng), Number(lat)]
+            coordinates: [Number(params.lng), Number(params.lat)]
           },
           $maxDistance: distance
         }
       };
     }
 
-    let sortOption: any = { rating: -1 };
-    
-    if (sortBy) {
-      switch (sortBy) {
-        case 'rating':
-          sortOption = { rating: -1 };
-          break;
-        case 'deliveryTime':
-          sortOption = { averageDeliveryTime: 1 };
-          break;
-        case 'minOrder':
-          sortOption = { minimumOrderValue: 1 };
-          break;
-        case 'name':
-          sortOption = { name: 1 };
-          break;
-        default:
-          sortOption = { rating: -1 };
-      }
-    }
+    return filter;
+  }
 
-    let restaurants = await Restaurant.find(filter).sort(sortOption);
-    
-    if (isOpenNow === 'true') {
-      const { day, time } = getCurrentDayAndTime();
-      restaurants = restaurants.filter(restaurant => {
-        const hours = restaurant.operatingHours[day as keyof typeof restaurant.operatingHours];
-        return hours && isTimeWithinRange(time, hours.open, hours.close);
-      });
-    }
-    
-    return restaurants;
+  /**
+   * Get sort option from query parameter
+   */
+  private getSortOption(sortBy?: string): any {
+    return SORT_OPTIONS[sortBy || ''] || SORT_OPTIONS.rating;
+  }
+
+  /**
+   * Filter restaurants by current operating hours
+   */
+  private filterOpenRestaurants(restaurants: any[]): any[] {
+    const { day, time } = getCurrentDayAndTime();
+    return restaurants.filter(restaurant => {
+      const hours = restaurant.operatingHours[day as keyof typeof restaurant.operatingHours];
+      return hours && isTimeWithinRange(time, hours.open, hours.close);
+    });
   }
   
   public async getRestaurantById(id: string): Promise<IRestaurant> {
