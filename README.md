@@ -1,3 +1,5 @@
+Check the implementation folder for test complete/implementation details
+
 # Food Delivery App - Backend Take Home Test
 
 This repository contains a take-home test for backend developers to demonstrate their skills by implementing new features for a food delivery application built with Node.js and TypeScript.
