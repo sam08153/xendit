@@ -1,4 +1,4 @@
-Check the implementation folder for test complete/implementation details
+Check the ./implementation folder for test complete/implementation details
 
 # Food Delivery App - Backend Take Home Test
 
